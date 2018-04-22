@@ -6,12 +6,19 @@ const config = require('./config.js');
 const request = require('request-promise-native');
 const fs = require('fs');
 const pkg = require('./package.json');
+const ical = require('ical');
 
 let mqtt;
 let mqttConnected = false;
 var eventsConnected = false;
 var events = [];
 var eventsTracker = null;
+
+const datadir = __dirname + '/data';
+const eventfilename = datadir + '/events.json';
+
+if (!fs.existsSync(datadir))
+  fs.mkdirSync(datadir, 0744);
 
 function eventRemove(category, summary, start, finish) {
   var i = 0;
@@ -101,7 +108,7 @@ function eventsRefreshHoliday() {
         Object.keys(body).forEach((key) => {
           var val = body[key];
           var d = new Date(val.datum + 'T00:00:00').getTime();
-          addEvent('holiday', key, d, d + 24*60*60*1000);
+          eventAdd('holiday', key, d, d + 24*60*60*1000);
         });
         eventsSave();
       }
@@ -123,7 +130,7 @@ function eventsRefreshSchool() {
         var val = body[i];
         var tss = new Date(val.start).getTime();
         var tsf = new Date(val.end).getTime();
-        addEvent('schoolvacation', val.name, tss, tsf);
+        eventAdd('schoolvacation', val.name, tss, tsf);
       }
       eventsSave();
     }
@@ -131,18 +138,18 @@ function eventsRefreshSchool() {
 }
 
 function eventsLoad() {
-  fs.readFile('/data/events.json', (err, data) => {
-    if (err)
+  fs.readFile(eventfilename, (err, data) => {
+    if (err) {
       log.error('error reading events file');
-    else {
+    } else {
       try {
         events = JSON.parse(data);
-        if (events.length == 0)
-          eventsRefresh();
       } catch(err) {
       }
-      eventsConnect();
     }
+    if (events.length == 0)
+      eventsRefresh();
+    eventsConnect();
   });
 }
 
@@ -156,7 +163,7 @@ function eventsSave(change = true) {
     var ts = new Date().getTime();
     if (ts > eventsSaved + 60 * 1000) {
       eventsChanged = false;
-      fs.writeFile('/data/events.json', JSON.stringify(events));
+      fs.writeFile(eventfilename, JSON.stringify(events));
       lastSave = ts;
     }
   }
