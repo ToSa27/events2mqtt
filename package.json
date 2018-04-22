@@ -1,0 +1,26 @@
+{
+  "name": "events2mqtt",
+  "version": "1.0.0",
+  "description": "events",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ToSa27/events2mqtt.git"
+  },
+  "author": "Tobias Hoff",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ToSa27/events2mqtt/issues"
+  },
+  "homepage": "https://github.com/ToSa27/events2mqtt#readme",
+  "dependencies": {
+    "mqtt": "^2.17.0",
+    "request": "^2.85.0",
+    "request-promise-native": "^1.0.5",
+    "yalm": "^4.1.0",
+    "yargs": "^11.0.0"
+  }
+}
