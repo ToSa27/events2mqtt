@@ -261,13 +261,13 @@ function start() {
 }
 
 function eventsChecker() {
-  var dt = new Date().getTime();
+  var ts = new Date().getTime();
   for (var i = 0; i < events.length; i++) {
     var event = events[i];
-    if ((event.start < dt) && (event.finish > dt) && (!(event.triggered))) {
+    if ((event.start < ts) && (event.finish > ts) && (!(event.triggered))) {
       mqttPublish(config.name + '/status/' + event.category + '/' + event.summary + '/state', JSON.stringify({ val: true, ts: ts, start: event.start, finish: event.finish }), {retain: true});
       event.triggered = true;
-    } else if ((event.finish < dt) && (event.triggered)) {
+    } else if ((event.finish < ts) && (event.triggered)) {
       mqttPublish(config.name + '/status/' + event.category + '/' + event.summary + '/state', JSON.stringify({ val: false, ts: ts, start: event.start, finish: event.finish }), {retain: true});
       event.triggered = false;
     }
